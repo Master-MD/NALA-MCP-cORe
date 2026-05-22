@@ -1,0 +1,42 @@
+.DS_Store
+.build/
+dist/
+*.xcuserdata/
+DerivedData/
+
+# Local vault/runtime data. Never commit personal project memory.
+Vault/
+Config/
+Index/
+Logs/
+Sandboxes/
+Exports/
+Backups/
+backups/
+dumps/
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+*.jsonl
+*.log
+*.zip
+*.dmg
+
+# Local secrets and credentials.
+.env
+.env.*
+*.pem
+*.key
+*.p8
+*.p12
+*.cer
+*.mobileprovision
+id_rsa*
+id_ed25519*
+*_token*
+*_secret*
+*_password*
+
+# Local/private planning packs with personal project notes.
+NALA-MCP-cORe-MASTERPACK*.md
