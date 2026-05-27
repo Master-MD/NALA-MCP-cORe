@@ -40,3 +40,6 @@ id_ed25519*
 
 # Local/private planning packs with personal project notes.
 NALA-MCP-cORe-MASTERPACK*.md
+
+# Internal only files
+___NUR-INTERN___/
