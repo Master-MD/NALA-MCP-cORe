@@ -1,0 +1,37 @@
+<Window x:Class="NALAMCPcOReWIN.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="NALA MCP cORe" Height="600" Width="800" Background="#1e1e1e" Foreground="White">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="TitleTextBlock" Text="NALA-MCP-cORe Control Center" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
+
+        <TabControl Grid.Row="1" Background="#2d2d2d" Foreground="White" BorderBrush="#3f3f46">
+            <TabItem x:Name="DashboardTab" Header="Dashboard">
+                <StackPanel Margin="20">
+                    <TextBlock x:Name="StatusHeaderTextBlock" Text="System Status" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                    <Border Background="#333333" CornerRadius="8" Padding="15">
+                        <StackPanel>
+                            <TextBlock x:Name="VaultStatusText" Text="Vault: Not Selected" Foreground="#4ade80" FontSize="14"/>
+                            <Button x:Name="SelectVaultButton" Content="Select Vault Location..." Width="150" HorizontalAlignment="Left" Margin="0,10,0,0" Padding="5" Click="SelectVault_Click"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </TabItem>
+            <TabItem x:Name="LogsTab" Header="Logs">
+                <TextBox x:Name="LogsTextBox" IsReadOnly="True" Background="#1e1e1e" Foreground="#cccccc" FontFamily="Consolas" BorderThickness="0" VerticalScrollBarVisibility="Auto"/>
+            </TabItem>
+        </TabControl>
+
+        <StatusBar Grid.Row="2" Background="#007acc" Foreground="White">
+            <StatusBarItem>
+                <TextBlock x:Name="StatusTextBlock" Text="Ready"/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>

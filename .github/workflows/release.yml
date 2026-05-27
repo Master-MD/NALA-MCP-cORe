@@ -1,0 +1,128 @@
+name: Build and Release NALA-MCP-cORe
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  # =========================================================================
+  # BUILD MAC OS (UNIVERSAL: ARM64 + INTEL)
+  # =========================================================================
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: '6.0'
+
+      - name: Build macOS Application (Universal)
+        run: |
+          cd macOS
+          # Compile for both x86_64 and arm64 and package it into a DMG
+          export NALA_APP_BUNDLE_NAME="NALA-MCP-cORe"
+          export NALA_APP_BUNDLE_ID="ch.nala.mcp-core"
+          
+          # Run build using the native script
+          chmod +x script/build_dmg.sh script/build_and_run.sh
+          ./script/build_dmg.sh
+          
+      - name: Upload macOS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NALA-MCP-cORe-macOS-DMG
+          path: macOS/dist/NALA-MCP-cORe-*.dmg
+
+  # =========================================================================
+  # BUILD WINDOWS (INTEL x64 + ARM64)
+  # =========================================================================
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+          
+      - name: Restore NuGet Packages
+        run: dotnet restore Windows/src/NALAMCPcOReWIN/NALAMCPcOReWIN.csproj
+        
+      - name: Build Release (x64)
+        run: |
+          dotnet publish Windows/src/NALAMCPcOReWIN/NALAMCPcOReWIN.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishReadyToRun=true -o ./publish/win-x64
+          
+      - name: Build Release (ARM64)
+        run: |
+          dotnet publish Windows/src/NALAMCPcOReWIN/NALAMCPcOReWIN.csproj -c Release -r win-arm64 --self-contained true -p:PublishSingleFile=true -p:PublishReadyToRun=true -o ./publish/win-arm64
+          
+      - name: Package Windows ZIPs
+        shell: pwsh
+        run: |
+          Compress-Archive -Path ./publish/win-x64/* -DestinationPath ./publish/NALA-MCP-cORe-WIN-x64.zip
+          Compress-Archive -Path ./publish/win-arm64/* -DestinationPath ./publish/NALA-MCP-cORe-WIN-arm64.zip
+          
+      - name: Upload Windows Artifact (x64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: NALA-MCP-cORe-Windows-x64-ZIP
+          path: ./publish/NALA-MCP-cORe-WIN-x64.zip
+          
+      - name: Upload Windows Artifact (ARM64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: NALA-MCP-cORe-Windows-ARM64-ZIP
+          path: ./publish/NALA-MCP-cORe-WIN-arm64.zip
+
+  # =========================================================================
+  # CREATE GITHUB RELEASE
+  # =========================================================================
+  create-release:
+    needs: [build-macos, build-windows]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Download macOS DMG Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: NALA-MCP-cORe-macOS-DMG
+          path: ./artifacts/macos
+
+      - name: Download Windows x64 ZIP Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: NALA-MCP-cORe-Windows-x64-ZIP
+          path: ./artifacts/windows-x64
+
+      - name: Download Windows ARM64 ZIP Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: NALA-MCP-cORe-Windows-ARM64-ZIP
+          path: ./artifacts/windows-arm64
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ./artifacts/macos/*.dmg
+            ./artifacts/macos/*.sha256
+            ./artifacts/windows-x64/*.zip
+            ./artifacts/windows-arm64/*.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

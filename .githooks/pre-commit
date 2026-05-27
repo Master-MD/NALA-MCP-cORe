@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-exec ./script/preflight_github_publish.sh
+exec ./macOS/script/preflight_github_publish.sh

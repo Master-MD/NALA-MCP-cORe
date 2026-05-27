@@ -1,113 +1,97 @@
-# NALA-MCP-cORe
+<p align="center">
+  <img src="macOS/Sources/NALAMCPcOReApp/Resources/AppIcon.png" alt="NALA MCP cORe Icon" width="128" height="128">
+</p>
 
-Native macOS SwiftUI control center for a local-only MCP memory/database core.
+<h1 align="center">NALA-MCP-cORe</h1>
 
-Version: `0.1.0`
-Bundle identifier: `ch.nala.mcp-core`
+<p align="center">
+  <strong>Native macOS & Windows Control Center for local-only MCP memory and SQLite database vaults.</strong>
+</p>
 
-## What It Does
+<p align="center">
+  <a href="README.de.md">Deutsch</a> • 
+  <a href="README.fr.md">Français</a> • 
+  <a href="README.it.md">Italiano</a>
+</p>
 
-NALA-MCP-cORe stores project memory in a local SQLite vault, indexes it with SQLite FTS5, writes append-only JSONL events, and exposes a small local MCP helper surface for tools such as Codex, Gemini CLI, Google Antigravity, and future NALA-bRaiN workflows.
+---
 
-Stable Core v0.1 includes:
+## 🚀 Easy Download & Installation (For End Users)
 
-- First-launch vault picker
-- SQLite database with WAL mode
-- FTS5 indexed search
-- Fingerprint index
-- JSONL event journal
-- Manual project, memory, decision, bug, and session summary entry
-- Local MCP helper tool dispatch
-- Backup Now with manifest, checksums, ZIP, and delta JSONL
-- Restore dry-run with checksum verification
-- NALA Full Dump export
-- NALA-bRaiN Sync package export
-- Permission policy where unknown clients and destructive tools are denied
-- Logs, health, settings, and visible planned Labs
+You do **NOT** need to compile this app or write code to use it! 
 
-UI/Stats/Flow patch additions:
+1. Go to the **[Releases](https://github.com/Master-MD/NALA-MCP-cORe/releases)** section on the right side of this GitHub page.
+2. Download the package for your operating system:
+   - **macOS:** Download the `.dmg` file (supports both Apple Silicon/ARM and Intel Macs).
+   - **Windows:** Download the `.zip` or `.exe` file (supports both Intel/AMD x64 and ARM64).
+3. Open the downloaded file, drag & drop (macOS) or extract and run the `.exe` (Windows), and choose your local vault folder.
 
-- MCP Clients connection wizard with copy-ready Codex, Gemini CLI, Antigravity, and Manual STDIO config
-- Real client state badges without fake active state
-- Responsive Status dashboard cards
-- Deep Stats with in-memory CPU/RAM/request samples
-- Optional menu bar status item
-- Flow Monitor policy matrix
-- Local bundled Help window
-- Side-by-side preview build so the current v0.1 app bundle is not replaced
+---
 
-## Build And Run
+## 💡 What It Does & The Idea Behind It
 
+**NALA-MCP-cORe** is a local-only central vault that acts as the "brain" or memory core for AI clients like Codex, Gemini CLI, Google Antigravity, and future NALA workflows. It stores project memories, decisions, bug reports, and sessions securely in a local SQLite vault.
+
+### Core Features:
+- **Zero-Cloud & 100% Local:** Your data never leaves your computer. No accounts, no APIs, no server keys required.
+- **Cross-Platform:** Native macOS app written in SwiftUI & Native Windows app written in C#/WPF.
+- **Smart FTS5 Indexing:** Ultra-fast context searching using SQLite full-text search.
+- **JSONL Event Journal:** An append-only log of all events for complete transparency and future audit trails.
+- **Auto-i18n:** Detects your operating system's language automatically (English, German, French, Italian).
+- **Unknown Client Blocking:** Rejects connections and modifications from unrecognized tools.
+
+---
+
+## 📸 In-App Screenshots
+
+### macOS App
+*Beautiful dark mode native macOS Control Center showing CPU, RAM, active clients, and connection wizards.*
+<p align="center">
+  <img src="macOS/Sources/NALAMCPcOReApp/Resources/AppIcon.png" alt="macOS Screenshot Placeholder" width="400">
+</p>
+
+### Windows App
+*Native WPF dashboard on Windows showing status, vault picker, and real-time logs.*
+<p align="center">
+  <img src="macOS/Sources/NALAMCPcOReApp/Resources/AppIcon.png" alt="Windows Screenshot Placeholder" width="400">
+</p>
+
+---
+
+## ❓ FAQ (Frequently Asked Questions)
+
+### Q: Where is my data stored?
+Your data is stored completely locally in a folder you choose during the first launch (e.g. `~/Library/Application Support/NALA-MCP-cORe/` on Mac or `C:\Users\<Name>\AppData\Local\NALA-MCP-cORe\` on Windows).
+
+### Q: Can I use it with cloud-synced folders?
+Yes! The Vault picker supports folders synced via iCloud Drive, Google Drive Desktop, Dropbox, or Synology Drive.
+
+### Q: Why is my connection denied?
+By default, the core uses strict permission policies. Unknown clients or destructive tools are automatically blocked to keep your database safe.
+
+---
+
+## 🛠️ Monorepo Directory Structure
+
+This repository is structured as a Monorepo:
+- `/macOS`: Contains the native macOS SwiftUI app bundle and target files.
+- `/Windows`: Contains the native Windows C# WPF app.
+- `/.github/workflows`: Contains the automated CI/CD pipelines.
+
+---
+
+## 🏗️ Developer Section (How to Compile)
+
+### macOS (Swift)
 ```bash
+cd macOS
 swift test
-./script/build_and_run.sh --verify
-```
-
-The app bundle is staged at:
-
-```text
-dist/NALA-MCP-cORe-UIStatsPreview.app
-```
-
-The supplied NALA app icon is embedded into the generated `.app` bundle.
-
-To intentionally package the original stable bundle name:
-
-```bash
 ./script/build_and_run.sh --stable
 ```
 
-## Vault Location
-
-Recommended default:
-
-```text
-~/Library/Application Support/NALA-MCP-cORe/
+### Windows (.NET 8.0)
+```cmd
+cd Windows
+dotnet build src/NALAMCPcOReWIN/NALAMCPcOReWIN.csproj -c Release
+dotnet run --project src/NALAMCPcOReWIN/NALAMCPcOReWIN.csproj
 ```
-
-The first-launch picker also supports a custom local folder, including folders synced by iCloud Drive, Google Drive Desktop, Dropbox, Synology Drive, NAS mounts, or external SSDs. No cloud API or OAuth is used in v0.1.
-
-## Safety Defaults
-
-- Local-only
-- No root requirement
-- No system-wide LaunchDaemon
-- No telemetry
-- Unknown clients denied
-- Destructive actions denied
-- Labs run on snapshots or stay disabled
-- HTTP binding validation rejects `0.0.0.0` and LAN IPs
-
-## Helper
-
-After build:
-
-```bash
-.build/debug/nala-mcp-core-helper --tool health_check --client Codex
-.build/debug/nala-mcp-core-helper --tool search_context --client Codex --query "loopback"
-```
-
-JSON-lines stdio mode:
-
-```bash
-.build/debug/nala-mcp-core-helper --stdio-jsonl --client Codex
-```
-
-Send:
-
-```json
-{"tool":"health_check","arguments":{}}
-```
-
-## v0.1 to v0.2 Upgrade Strategy
-
-v0.2 should first run a preflight:
-
-1. Find v0.1 vault candidates.
-2. Verify `Vault/nala-mcp-core.sqlite` and `Vault/events.jsonl`.
-3. Create or verify a backup/dump.
-4. Detect recent MCP client activity.
-5. Inspect data while running if needed.
-6. Require the user to stop active clients before final migration.
-
-It is technically possible to inspect a WAL-mode SQLite vault while the old helper is running. Final migration should not proceed during active writes.
